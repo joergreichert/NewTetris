@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="DirReader" basedir="." default="exe">
+	<property name="src.dir"  value="src" />
+	<property name="bin.dir"  value="classes" />
+	<property name="jar.dir"  value="jar" />
+	<property name="project"  value="newtetris" />
+
+	<target name="clean" unless="src.uptodate">
+		<delete includeEmptyDirs="true" quiet="true" 
+			failonerror="false">
+			<fileset dir="${bin.dir}" />
+			<fileset dir="${jar.dir}" />			
+		</delete>
+	</target>
+		
+	<target name="init" depends="clean">
+		<mkdir dir="${bin.dir}" />
+		<mkdir dir="${jar.dir}" />
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" />		
+	</target>
+
+	<target name="jar" depends="compile" unless="jar.exists">
+		<jar destfile="${jar.dir}/${project}.jar" 
+			basedir="${bin.dir}"
+			includes="**/*.*">
+			<manifest>
+				<attribute name="Main-Class" value="newtetris.TetrisMain"/>
+			</manifest>			
+		</jar>
+	</target>
+	
+	<taskdef name="exe4j"
+		classname="com.exe4j.Exe4JTask"
+		classpath="E:\Programmieren\Java\exe4j\bin\exe4j.jar"/>
+	
+	<target name="exe" depends="jar">
+		<exe4j projectfile="NewTetris.exe4j" />
+	</target>	
+	
+	<available filepath="${jar.dir}" file="${project}.jar" 
+		property="jar.exist" />
+	
+	<target name="run.jar">
+		<java jar="${jar.dir}/NewTetris.jar" fork="true" />
+	</target>
+	
+	<target name="run">
+		<java classname="${project}.TetrisMain">
+			<classpath>
+		        <pathelement path="${bin.dir}"/>
+			</classpath>
+		</java>
+	</target>
+</project>
